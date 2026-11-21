@@ -10,13 +10,13 @@ class SkeletonPainter extends CustomPainter {
   /// Native resolution of the camera frame processed by ML Kit.
   final Size imageSize;
 
-  /// Whether the active camera is front-facing (mirrors the X-axis).
-  final bool isFrontCamera;
+  /// Whether the view is horizontally mirrored like an actual mirror reflection.
+  final bool isMirrored;
 
   SkeletonPainter({
     required this.joints,
     required this.imageSize,
-    this.isFrontCamera = true,
+    this.isMirrored = true,
   });
 
   /// Pairwise joint connections (bones) to render.
@@ -77,7 +77,7 @@ class SkeletonPainter extends CustomPainter {
       final double rawY = (joint['y'] as num).toDouble();
 
       final double canvasX =
-          isFrontCamera ? (size.width - (rawX * scaleX)) : (rawX * scaleX);
+          isMirrored ? (size.width - (rawX * scaleX)) : (rawX * scaleX);
       final double canvasY = rawY * scaleY;
 
       return Offset(canvasX, canvasY);
@@ -107,7 +107,6 @@ class SkeletonPainter extends CustomPainter {
   bool shouldRepaint(covariant SkeletonPainter oldDelegate) {
     return oldDelegate.joints != joints ||
         oldDelegate.imageSize != imageSize ||
-        oldDelegate.isFrontCamera != isFrontCamera;
+        oldDelegate.isMirrored != isMirrored;
   }
 }
-
