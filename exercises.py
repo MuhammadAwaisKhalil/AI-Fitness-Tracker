@@ -123,6 +123,29 @@ def _pushup_form(joints, side):
     return None
 
 
+def _squat_form(joints, side):
+    """Check torso collapse forward."""
+    names = [f"{side}_{j}" for j in ("shoulder", "hip", "knee")]
+    if not all(n in joints and joints[n]["visibility"] >= MIN_VISIBILITY for n in names):
+        return None
+    if calculate_angle(*(joints[n] for n in names)) < 65:
+        return "Keep your chest lifted - don't collapse"
+    return None
+
+
+def _plank_form(joints, side):
+    """Ensure flat back plank."""
+    names = [f"{side}_{j}" for j in ("shoulder", "hip", "ankle")]
+    if not all(n in joints and joints[n]["visibility"] >= MIN_VISIBILITY for n in names):
+        return None
+    angle = calculate_angle(*(joints[n] for n in names))
+    if angle < 150:
+        return "Hips sagging! Tighten core"
+    elif angle > 195:
+        return "Hips too high! Lower hips level with spine"
+    return None
+
+
 # ---------------------------------------------------------------- exercise library
 BICEP_CURL = ExerciseSpec(
     name="Bicep Curl",
@@ -136,6 +159,7 @@ SQUAT = ExerciseSpec(
     joints=("hip", "knee", "ankle"),
     extended=160, flexed=100, partial=130,
     partial_msg="Go deeper - hips down",
+    form_check=_squat_form,
 )
 
 PUSH_UP = ExerciseSpec(
@@ -146,5 +170,51 @@ PUSH_UP = ExerciseSpec(
     form_check=_pushup_form,
 )
 
+SHOULDER_PRESS = ExerciseSpec(
+    name="Shoulder Press",
+    joints=("shoulder", "elbow", "wrist"),
+    extended=160, flexed=85, partial=125,
+    partial_msg="Press fully overhead",
+)
+
+LUNGE = ExerciseSpec(
+    name="Lunge",
+    joints=("hip", "knee", "ankle"),
+    extended=160, flexed=95, partial=125,
+    partial_msg="Lower hips deeper into lunge",
+)
+
+PLANK = ExerciseSpec(
+    name="Plank",
+    joints=("shoulder", "hip", "ankle"),
+    extended=160, flexed=160, partial=145,
+    partial_msg="Keep body in a straight plank line",
+    form_check=_plank_form,
+)
+
+JUMPING_JACKS = ExerciseSpec(
+    name="Jumping Jacks",
+    joints=("hip", "shoulder", "wrist"),
+    extended=40, flexed=140, partial=90,
+    partial_msg="Clap hands overhead",
+)
+
+HIGH_KNEES = ExerciseSpec(
+    name="High Knees",
+    joints=("shoulder", "hip", "knee"),
+    extended=160, flexed=85, partial=120,
+    partial_msg="Drive knee up to hip level",
+)
+
 # Key pressed in webCam.py -> exercise
-EXERCISES = {"1": BICEP_CURL, "2": SQUAT, "3": PUSH_UP}
+EXERCISES = {
+    "1": BICEP_CURL,
+    "2": PUSH_UP,
+    "3": SHOULDER_PRESS,
+    "4": SQUAT,
+    "5": LUNGE,
+    "6": PLANK,
+    "7": JUMPING_JACKS,
+    "8": HIGH_KNEES,
+}
+
