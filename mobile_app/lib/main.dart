@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'features/auth/screens/auth_screen.dart';
+import 'features/auth/services/auth_service.dart';
 import 'features/chat/chat_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/nutrition/nutrition_screen.dart';
@@ -21,6 +23,9 @@ void main() async {
       systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
+
+  // Initialize auth service (checks for existing session)
+  await AuthService.instance.init();
 
   runApp(const AiFitnessTrackerApp());
 }
@@ -44,7 +49,12 @@ class AiFitnessTrackerApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MainShell(),
+      // AuthScreen is the initial route. On success it pushes '/home'.
+      initialRoute: '/auth',
+      routes: {
+        '/auth': (_) => const AuthScreen(),
+        '/home': (_) => const MainShell(),
+      },
     );
   }
 }
